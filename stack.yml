@@ -1,0 +1,39 @@
+version: "3.7"
+
+networks:
+  backend_nw:
+    driver: overlay
+    external: true
+
+services:
+  pg_backups:
+    image: akhilrs/postgres-backup:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1G
+    environment:
+      - SCHEDULE=@every 12h0m0s
+      - BACKUP_KEEP_DAYS=1
+      - BACKUP_KEEP_WEEKS=1
+      - BACKUP_KEEP_MONTHS=1
+      - HEALTHCHECK_PORT=80
+      - CLOUD_BACKUP=True
+      - CLOUD_PROVIDER=AWS
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - S3_SUB_FOLDER=${S3_SUB_FOLDER}
+      - AWS_REGION=${AWS_REGION}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
+    volumes:
+      - ./postgres-backups:/backups
+    networks:
+      - backend_nw

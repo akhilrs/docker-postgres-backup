@@ -1,0 +1,79 @@
+ARG BASETAG=latest
+FROM alpine:$BASETAG
+
+LABEL maintainer="akhilrs <https://akhil.rs>"
+
+ARG GOCRONVER=v0.0.9
+ARG TARGETOS
+ARG TARGETARCH
+RUN apk add --no-cache \
+    coreutils \
+    bash \
+    tzdata \
+    py3-pip \
+    curl
+
+RUN set -x \
+	&& apk update && apk upgrade && \
+    apk add ca-certificates tar gzip \
+	&& curl -L https://github.com/prodrigestivill/go-cron/releases/download/$GOCRONVER/go-cron-$TARGETOS-$TARGETARCH-static.gz | zcat -f  > /usr/local/bin/go-cron \
+	&& chmod a+x /usr/local/bin/go-cron \
+	&& apk del ca-certificates
+
+ENV POSTGRES_DB="**None**" \
+    POSTGRES_DB_FILE="**None**" \
+    POSTGRES_HOST="**None**" \
+    POSTGRES_PORT=5432 \
+    POSTGRES_USER="**None**" \
+    POSTGRES_USER_FILE="**None**" \
+    POSTGRES_PASSWORD="**None**" \
+    POSTGRES_PASSWORD_FILE="**None**" \
+    POSTGRES_EXTRA_OPTS="-Z9" \
+    SCHEDULE="@daily" \
+    BACKUP_DIR="/backups" \
+    BACKUP_KEEP_DAYS=7 \
+    BACKUP_KEEP_WEEKS=4 \
+    BACKUP_KEEP_MONTHS=6 \
+    HEALTHCHECK_PORT=8080 \
+    AZURE_SA_CONTAINER="**None**" \
+    AZURE_SA_CONNECTION_STRING="**None**" \
+    AWS_REGION="**None**" \
+    AWS_ACCESS_KEY="**None**" \
+    AWS_SECRET_KEY="**None**" \
+    AWS_S3_BUCKET="**None**" \
+    S3_SUB_FOLDER="**None**"
+
+
+# Install Python3
+
+
+RUN apk add --no-cache python3-dev libffi-dev gcc musl-dev openssl openssl-dev
+
+RUN pip3 install pip --upgrade
+
+# Install Rust for building cryptography package
+
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN curl https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init --output /tmp/rustup-init \
+    && chmod +x /tmp/rustup-init \
+    && /tmp/rustup-init -y \
+    && pip install --no-cache-dir poetry --ignore-installed 
+
+
+# Install dependencies
+COPY pyproject.toml poetry.lock /
+RUN set -ex && poetry config virtualenvs.create false
+RUN set -ex && poetry install
+
+
+COPY backup.sh /backup.sh
+COPY azblob_async.py /azblob_async.py
+COPY aws_async.py /aws_async.py
+
+VOLUME /backups
+
+ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["exec /usr/local/bin/go-cron -s \"$SCHEDULE\" -p \"$HEALTHCHECK_PORT\" -- /backup.sh"]
+
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f "http://localhost:$HEALTHCHECK_PORT/" || exit 1
