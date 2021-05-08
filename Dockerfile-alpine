@@ -1,5 +1,5 @@
-ARG BASETAG=latest
-FROM alpine:$BASETAG
+ARG BASETAG=alpine
+FROM postgres:$BASETAG
 
 LABEL maintainer="akhilrs <https://akhil.rs>"
 
@@ -10,7 +10,6 @@ RUN apk add --no-cache \
     coreutils \
     bash \
     tzdata \
-    py3-pip \
     curl
 
 RUN set -x \
@@ -19,6 +18,8 @@ RUN set -x \
 	&& curl -L https://github.com/prodrigestivill/go-cron/releases/download/$GOCRONVER/go-cron-$TARGETOS-$TARGETARCH-static.gz | zcat -f  > /usr/local/bin/go-cron \
 	&& chmod a+x /usr/local/bin/go-cron \
 	&& apk del ca-certificates
+
+
 
 ENV POSTGRES_DB="**None**" \
     POSTGRES_DB_FILE="**None**" \
@@ -29,11 +30,13 @@ ENV POSTGRES_DB="**None**" \
     POSTGRES_PASSWORD="**None**" \
     POSTGRES_PASSWORD_FILE="**None**" \
     POSTGRES_EXTRA_OPTS="-Z9" \
+    CLOUD_BACKUP=False \
+    CLOUD_PROVIDER="**None**" \
     SCHEDULE="@daily" \
-    BACKUP_DIR="/backups" \
+    BACKUP_DIR="./backups" \
     BACKUP_KEEP_DAYS=7 \
-    BACKUP_KEEP_WEEKS=4 \
-    BACKUP_KEEP_MONTHS=6 \
+    BACKUP_KEEP_WEEKS=2 \
+    BACKUP_KEEP_MONTHS=1 \
     HEALTHCHECK_PORT=8080 \
     AZURE_SA_CONTAINER="**None**" \
     AZURE_SA_CONNECTION_STRING="**None**" \
@@ -44,12 +47,17 @@ ENV POSTGRES_DB="**None**" \
     S3_SUB_FOLDER="**None**"
 
 
+
 # Install Python3
 
+RUN apk add --no-cache python3 python3-dev libffi-dev gcc musl-dev openssl openssl-dev && \
+    python3 -m ensurepip && \
+    rm -r /usr/lib/python*/ensurepip && \
+    pip3 install --upgrade pip setuptools && \
+    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
+    if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
+    rm -r /root/.cache
 
-RUN apk add --no-cache python3-dev libffi-dev gcc musl-dev openssl openssl-dev
-
-RUN pip3 install pip --upgrade
 
 # Install Rust for building cryptography package
 
@@ -58,6 +66,7 @@ RUN curl https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rust
     && chmod +x /tmp/rustup-init \
     && /tmp/rustup-init -y \
     && pip install --no-cache-dir poetry --ignore-installed 
+
 
 
 # Install dependencies
