@@ -32,7 +32,7 @@ esac
 done
 
 DOCKER_BAKE_FILE=${1:-"docker-bake.hcl"}
-ALPINE_TAGS=${ALPINE_TAGS:-"3.12 3.11 latest"}
+ALPINE_TAGS=${ALPINE_TAGS:-"12 11 10 9.6 9.5 9.4 latest"}
 DEBIAN_TAGS=${DEBIAN_TAGS:-"stable stretch testing"}
 GOCRONVER=${GOCRONVER:-"v0.0.9"}
 PLATFORMS=${PLATFORMS:-"linux/amd64 linux/arm64"}
