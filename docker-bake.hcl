@@ -1,5 +1,5 @@
 group "default" {
-	targets = ["11-alpine", "10-alpine", "9.6-alpine", "9.5-alpine", "9.4-alpine", "alpine"]
+	targets = ["11-alpine", "10-alpine", "9.6-alpine", "9.5-alpine", "9.4"]
 }
 target "common" {
 	platforms = ["linux/amd64"]
@@ -42,9 +42,4 @@ target "9.4-alpine" {
   inherits = ["alpine"]
 	args = {"BASETAG" = "9.4-alpine"}
   tags = ["akhilrs/postgres-backup:9.4-alpine"]
-}
-target "alpine-alpine" {
-  inherits = ["alpine"]
-	args = {"BASETAG" = "alpine-alpine"}
-  tags = ["akhilrs/postgres-backup:alpine-alpine"]
 }
