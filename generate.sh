@@ -32,7 +32,7 @@ esac
 done
 
 DOCKER_BAKE_FILE=${1:-"docker-bake.hcl"}
-ALPINE_TAGS=${ALPINE_TAGS:-"11 10 9.6 9.5 9.4 "}
+ALPINE_TAGS=${ALPINE_TAGS:-"11 10 9.6 9.5 9.4 alpine"}
 DEBIAN_TAGS=${DEBIAN_TAGS:-"stable stretch testing"}
 GOCRONVER=${GOCRONVER:-"v0.0.9"}
 PLATFORMS=${PLATFORMS:-"linux/amd64 linux/arm64"}
@@ -67,6 +67,12 @@ target "alpine" {
 # 	args = {"BASETAG" = "latest"}
 #   tags = ["$IMAGE_NAME:latest"]
 # }
+
+target "alpine" {
+  inherits = ["alpine"]
+	args = {"BASETAG" = "alpine"}
+  tags = ["$IMAGE_NAME:alpine"]
+}
 EOF
 
 # for TAG in $DEBIAN_TAGS; do cat >> "$DOCKER_BAKE_FILE" << EOF
@@ -78,11 +84,11 @@ EOF
 # EOF
 # done
 
-for TAG in $ALPINE_TAGS; do cat >> "$DOCKER_BAKE_FILE" << EOF
-target "$TAG-alpine" {
+for TAG in $T; do cat >> "$DOCKER_BAKE_FILE" << EOF
+target $TAG {
   inherits = ["alpine"]
-	args = {"BASETAG" = "$TAG-alpine"}
-  tags = ["$IMAGE_NAME:$TAG-alpine"]
+	args = {"BASETAG" = "$TAG"}
+  tags = ["$IMAGE_NAME:$TAG"]
 }
 EOF
 done
