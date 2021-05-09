@@ -32,7 +32,7 @@ esac
 done
 
 DOCKER_BAKE_FILE=${1:-"docker-bake.hcl"}
-TAGS=${TAGS:-"3.13 3.12 3.11"}
+TAGS=${TAGS:-"3.13 3.12"}
 GOCRONVER=${GOCRONVER:-"v0.0.9"}
 PLATFORMS=${PLATFORMS:-"linux/amd64 linux/arm64"}
 IMAGE_NAME=${IMAGE_NAME:-"akhilrs/postgres-backup"}
