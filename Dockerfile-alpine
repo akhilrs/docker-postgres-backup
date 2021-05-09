@@ -2,7 +2,7 @@ ARG BASETAG=alpine
 FROM alpine:$BASETAG
 ARG TARGETARCH
 
-RUN apk update && apk upgrade
+RUN apk update
 
 # install pg_dump
 RUN apk add postgresql-client
@@ -51,7 +51,14 @@ RUN apk add gnupg
 RUN apk add python3 py3-pip python3-dev
 
 # install dependency packages
-RUN apk add gcc musl-dev libffi-dev rust
+RUN apk add gcc musl-dev libffi-dev 
+
+# Install Rust for building cryptography package
+
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN curl https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init --output /tmp/rustup-init \
+    && chmod +x /tmp/rustup-init \
+    && /tmp/rustup-init -y
 
 # upgrade pip
 RUN pip3 install pip --upgrade
@@ -60,7 +67,8 @@ RUN pip3 install azure-storage-blob==12.7.1 aiohttp==3.7.3 aioboto3==8.2.0
 
 
 # cleanup
-RUN apk del gcc python3-dev musl-dev libffi-dev rust
+RUN apk del gcc python3-dev musl-dev libffi-dev
+RUN rustup self uninstall -y
 RUN rm -rf /var/cache/apk/*
 
 COPY scripts/backup.sh /backup.sh
