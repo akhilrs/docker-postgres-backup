@@ -44,20 +44,21 @@ ENV POSTGRES_DB="**None**" \
 
 
 
-# Install Python3
-
-
 # install gpg
 RUN apk add gnupg
+
+# Install Python3
+RUN apk add python3 py3-pip python3-dev
 
 # install dependency packages
 RUN apk add gcc
 
-RUN apk add python3 py3-pip
+
 RUN pip3 install azure-storage-blob==12.7.1 aiohttp==3.7.3 aioboto3==8.2.0
 
 
 # cleanup
+RUN apk del gcc python3-dev
 RUN rm -rf /var/cache/apk/*
 
 COPY scripts/backup.sh /backup.sh
