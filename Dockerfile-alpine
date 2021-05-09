@@ -50,6 +50,9 @@ ENV POSTGRES_DB="**None**" \
 # install gpg
 RUN apk add gnupg
 
+# install dependency packages
+RUN apk add gcc
+
 RUN apk add python3 py3-pip
 RUN pip3 install azure-storage-blob==12.7.1 aiohttp==3.7.3 aioboto3==8.2.0
 
