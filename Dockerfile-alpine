@@ -2,7 +2,7 @@ ARG BASETAG=alpine
 FROM alpine:$BASETAG
 ARG TARGETARCH
 
-RUN apk update
+RUN apk update && upgrade
 
 # install pg_dump
 RUN apk add postgresql-client
