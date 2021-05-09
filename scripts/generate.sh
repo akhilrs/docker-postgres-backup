@@ -33,7 +33,7 @@ done
 
 DOCKER_BAKE_FILE=${1:-"docker-bake.hcl"}
 TAGS=${TAGS:-"3.13 3.12"}
-GOCRONVER=${GOCRONVER:-"v0.0.9"}
+GOCRONVER=${GOCRONVER:-"v0.0.10"}
 PLATFORMS=${PLATFORMS:-"linux/amd64 linux/arm64"}
 IMAGE_NAME=${IMAGE_NAME:-"akhilrs/postgres-backup"}
 
