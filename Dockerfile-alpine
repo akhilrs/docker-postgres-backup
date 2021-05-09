@@ -1,6 +1,5 @@
 ARG BASETAG=alpine
 FROM alpine:$BASETAG
--p="linux/amd64"
 ARG TARGETARCH
 
 RUN apk update
