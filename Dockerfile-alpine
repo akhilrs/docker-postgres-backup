@@ -12,8 +12,7 @@ RUN set -x \
 	&& apk update && apk upgrade && \
     apk add ca-certificates tar gzip curl \
 	&& curl -L https://github.com/prodrigestivill/go-cron/releases/download/$GOCRONVER/go-cron-$TARGETOS-$TARGETARCH-static.gz | zcat -f  > /usr/local/bin/go-cron \
-	&& chmod a+x /usr/local/bin/go-cron \
-	&& apk del ca-certificates curl
+	&& chmod a+x /usr/local/bin/go-cron
 
 
 
@@ -67,7 +66,7 @@ RUN pip3 install azure-storage-blob==12.7.1 aiohttp==3.7.3 aioboto3==8.2.0
 
 
 # cleanup
-RUN apk del gcc python3-dev musl-dev libffi-dev
+RUN apk del gcc python3-dev musl-dev libffi-dev ca-certificates curl
 RUN rustup self uninstall -y
 RUN rm -rf /var/cache/apk/*
 
