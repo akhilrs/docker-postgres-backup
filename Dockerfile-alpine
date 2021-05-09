@@ -51,7 +51,7 @@ ENV POSTGRES_DB="**None**" \
 RUN apk add gnupg
 
 RUN apk add python3 py3-pip
-RUN pip3 install azure-storage-blob==12.7.1 aiohttp==3.7.3 aioboto3==8.2.0 --use-feature=2020-resolver
+RUN pip3 install azure-storage-blob==12.7.1 aiohttp==3.7.3 aioboto3==8.2.0
 
 
 # cleanup
