@@ -51,7 +51,7 @@ RUN apk add gnupg
 RUN apk add python3 py3-pip python3-dev
 
 # install dependency packages
-RUN apk add gcc musl-dev libffi-dev
+RUN apk add gcc musl-dev libffi-dev rust
 
 # upgrade pip
 RUN pip3 install pip --upgrade
@@ -60,7 +60,7 @@ RUN pip3 install azure-storage-blob==12.7.1 aiohttp==3.7.3 aioboto3==8.2.0
 
 
 # cleanup
-RUN apk del gcc python3-dev musl-dev libffi-dev
+RUN apk del gcc python3-dev musl-dev libffi-dev rust
 RUN rm -rf /var/cache/apk/*
 
 COPY scripts/backup.sh /backup.sh
