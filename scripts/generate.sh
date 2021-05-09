@@ -32,7 +32,7 @@ esac
 done
 
 DOCKER_BAKE_FILE=${1:-"docker-bake.hcl"}
-TAGS=${TAGS:-"13 12 11 10 9.6 9.5"}
+TAGS=${TAGS:-"3.13 3.12 3.11"}
 GOCRONVER=${GOCRONVER:-"v0.0.9"}
 PLATFORMS=${PLATFORMS:-"linux/amd64 linux/arm64"}
 IMAGE_NAME=${IMAGE_NAME:-"akhilrs/postgres-backup"}
@@ -46,7 +46,7 @@ P="\"$(echo $PLATFORMS | sed 's/ /", "/g')\""
 
 T="\"alpine-latest\", \"$(echo alpine-$TAGS_EXTRA | sed 's/ /", "alpine-/g')\""
 
-cat > "$DOCKER_BAKE_FILE" << EOF
+cat > "../$DOCKER_BAKE_FILE" << EOF
 group "default" {
 	targets = [$T]
 }
@@ -60,7 +60,7 @@ target "alpine" {
 }
 target "alpine-latest" {
 	inherits = ["alpine"]
-	args = {"BASETAG" = "$MAIN_TAG-alpine"}
+	args = {"BASETAG" = "$MAIN_TAG"}
 	tags = [
 		"$IMAGE_NAME:alpine",
 		"$IMAGE_NAME:$MAIN_TAG-alpine"
@@ -68,10 +68,10 @@ target "alpine-latest" {
 }
 EOF
 
-for TAG in $TAGS_EXTRA; do cat >> "$DOCKER_BAKE_FILE" << EOF
+for TAG in $TAGS_EXTRA; do cat >> "../$DOCKER_BAKE_FILE" << EOF
 target "alpine-$TAG" {
 	inherits = ["alpine"]
-	args = {"BASETAG" = "$TAG-alpine"}
+	args = {"BASETAG" = "$TAG"}
 	tags = [
 		"$IMAGE_NAME:$TAG-alpine"
 	]

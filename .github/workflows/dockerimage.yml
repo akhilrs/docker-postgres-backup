@@ -39,7 +39,7 @@ jobs:
       -
         name: Generate bake file
         run:
-          ./generate.sh -p="linux/amd64"
+          ./scripts/generate.sh -p="linux/amd64"
 
       -
         name: Build and push
