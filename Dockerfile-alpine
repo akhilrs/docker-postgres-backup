@@ -41,7 +41,7 @@ ENV POSTGRES_DB="**None**" \
     AWS_ACCESS_KEY="**None**" \
     AWS_SECRET_KEY="**None**" \
     AWS_S3_BUCKET="**None**" \
-    S3_SUB_FOLDER="**None**"
+    AWS_S3_SUB_FOLDER="**None**"
 
 
 # Install Python3 dependency packages and  (Rust for building cryptography package)
